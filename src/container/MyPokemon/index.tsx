@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { usePokemon } from '@/hooks/usePokemon';
 import { PokemonCard } from '@/components/PokemonCard';
 import { Link } from 'react-router-dom';
@@ -5,6 +6,14 @@ import { Trash2 } from 'lucide-react';
 
 const MyPokemon = () => {
   const { myPokemon, releasePokemon } = usePokemon();
+  const [pokemonToRelease, setPokemonToRelease] = useState<string | null>(null);
+
+  const confirmRelease = () => {
+    if (pokemonToRelease) {
+      releasePokemon(pokemonToRelease);
+      setPokemonToRelease(null);
+    }
+  };
 
   return (
     <div className="py-8">
@@ -47,9 +56,7 @@ const MyPokemon = () => {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    if(window.confirm(`Are you sure you want to release ${pokemon.nickname}?`)) {
-                      releasePokemon(pokemon.nickname);
-                    }
+                    setPokemonToRelease(pokemon.nickname);
                   }}
                   className="p-3 bg-[#ff7675] text-black rounded-full border-[3px] border-black shadow-[3px_3px_0_0_#000] hover:-translate-y-1 hover:shadow-[5px_5px_0_0_#000] active:translate-y-1 active:shadow-none transition-all"
                   aria-label="Release Pokemon"
@@ -64,6 +71,31 @@ const MyPokemon = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {pokemonToRelease && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-3xl border-[4px] border-black shadow-[8px_8px_0_0_#000] max-w-sm w-full relative">
+            <h3 className="text-2xl font-black text-black mb-4">Release Pokemon?</h3>
+            <p className="font-bold text-gray-700 mb-8">
+              Are you sure you want to release <span className="text-black bg-[#ff7675] px-2 py-0.5 border-[2px] border-black rounded-md">{pokemonToRelease}</span> back into the wild? This action cannot be undone.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setPokemonToRelease(null)}
+                className="flex-1 py-3 bg-white text-black font-black border-[3px] border-black shadow-[4px_4px_0_0_#000] rounded-xl hover:-translate-y-1 transition-all active:translate-y-1 active:shadow-none"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRelease}
+                className="flex-1 py-3 bg-[#ff7675] text-black font-black border-[3px] border-black shadow-[4px_4px_0_0_#000] rounded-xl hover:-translate-y-1 transition-all active:translate-y-1 active:shadow-none"
+              >
+                Release
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
