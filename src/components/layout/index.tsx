@@ -1,14 +1,12 @@
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { Home, Star } from 'lucide-react';
 
 const Layout = () => {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'My Pokemon', path: '/my-pokemon' }
+    { name: 'Home', path: '/', icon: Home },
+    { name: 'My Pokemon', path: '/my-pokemon', icon: Star }
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -41,44 +39,15 @@ const Layout = () => {
               ))}
             </div>
 
-            <div className="flex items-center md:hidden gap-3">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="p-2.5 rounded-xl border-[3px] border-black shadow-[2px_2px_0_0_#000] bg-white text-black active:translate-y-1 active:shadow-none transition-all"
-              >
-                {isOpen ? <X size={20} strokeWidth={3} /> : <Menu size={20} strokeWidth={3} />}
-              </button>
-            </div>
           </div>
         </div>
-
-        {isOpen && (
-          <div className="md:hidden bg-white border-t-[3px] border-black pb-4">
-            <div className="px-4 pt-4 pb-3 space-y-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-base font-black border-[3px] ${
-                    isActive(link.path)
-                      ? 'bg-[#ccff00] text-black border-black shadow-[3px_3px_0_0_#000]'
-                      : 'border-transparent text-black hover:bg-gray-100'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </nav>
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12 relative z-10">
         <Outlet />
       </main>
 
-      <footer className="bg-white border-t-[4px] border-black py-8 mt-auto z-10 relative">
+      <footer className="bg-white border-t-[4px] border-black pt-8 pb-28 md:py-8 mt-auto z-10 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <img className="h-6 w-auto grayscale" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="Pokeball" />
@@ -92,6 +61,34 @@ const Layout = () => {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t-[3px] border-black z-50 px-2 py-2 flex justify-around items-center pb-4 shadow-[0_-4px_0_0_rgba(0,0,0,0.1)]">
+        {navLinks.map((link) => {
+          const Icon = link.icon;
+          const active = isActive(link.path);
+          return (
+            <Link
+              key={link.name}
+              to={link.path}
+              className={`flex flex-col items-center justify-center w-full py-1 transition-all ${
+                active ? 'text-black translate-y-[-4px]' : 'text-gray-500 hover:text-black'
+              }`}
+            >
+              <div className={`p-2 rounded-xl border-[2px] transition-all ${
+                active 
+                  ? 'bg-[#ccff00] border-black shadow-[2px_2px_0_0_#000]' 
+                  : 'border-transparent bg-transparent'
+              }`}>
+                <Icon size={24} strokeWidth={active ? 3 : 2} />
+              </div>
+              <span className={`text-[10px] font-black mt-1 ${active ? 'text-black' : 'text-gray-500'}`}>
+                {link.name}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 };
